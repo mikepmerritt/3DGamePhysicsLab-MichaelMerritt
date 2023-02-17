@@ -29,13 +29,17 @@ public class Spawner : MonoBehaviour
     public float                attractPush = 2f;
     public float                attractPushDist = 5f;
 
-    // Additional fields for spawning in ploids and divoids
+    // Additional fields for spawning in ploids and divoids (part 3)
     [Header("Set in Inspector: Ploids and Divoids")]
     public GameObject           ploidPrefab;
     public GameObject           divoidPrefab;
     public int                  numPloids = 2;
     public int                  numDivoids = 3;
     
+    // Some variables to use for the formation of the boids (part 1)
+    public float                boidTargetHeight = 2f;
+    public float                ploidTargetHeight = 5f;
+    public float                divoidTargetHeight = -2f;
     
     void Awake()
     {

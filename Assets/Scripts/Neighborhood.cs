@@ -8,6 +8,9 @@ public class Neighborhood : MonoBehaviour
     public List<Boid>       neighbors;
     private SphereCollider  coll;
 
+    // obstacle list
+    public List<Obstacle>   obstacles;
+
     void Start()
     {
         neighbors = new List<Boid>();
@@ -33,6 +36,16 @@ public class Neighborhood : MonoBehaviour
             { neighbors.Add(b);
             }
         }
+        // obstacle detection - if there is an obstacle, add it to the list
+        Obstacle o = other.GetComponent<Obstacle>();
+        if (o != null)
+        {
+            if(obstacles.IndexOf(o) == -1)
+            {
+                obstacles.Add(o);
+            }
+        }
+
     }
     void OnTriggerExit(Collider other)
     {
@@ -42,6 +55,15 @@ public class Neighborhood : MonoBehaviour
             if (neighbors.IndexOf(b) != -1)
             {
                 neighbors.Remove(b);
+            }
+        }
+        // obstacle detection - if it left an obstacle, remove it from the list
+        Obstacle o = other.GetComponent<Obstacle>();
+        if (o != null)
+        {
+            if(obstacles.IndexOf(o) != -1)
+            {
+                obstacles.Remove(o);
             }
         }
     }
@@ -107,4 +129,7 @@ public class Neighborhood : MonoBehaviour
             return avg;
         }
     }
+
+    // code using a raycast to check for obstacles in front of the boid
+    // if there is an obstacle, choose a side to dodge it
 }

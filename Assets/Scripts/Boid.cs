@@ -20,6 +20,8 @@ public class Boid : MonoBehaviour
     public float myangle;
     float rotationRate = 0.50f;
 
+    
+
     // Use this for initialization
     void Awake()
     {
@@ -112,6 +114,8 @@ public class Boid : MonoBehaviour
             velAvoid = pos - tooClosePos;
             velAvoid.Normalize();
             velAvoid *= spn.velocity;
+
+            Debug.Log("too close!");
         }
 
         //Velocity matching - Try to match velocity with neigbors
