@@ -135,34 +135,13 @@ public class Neighborhood : MonoBehaviour
     {
         get
         {
-            // look at all of the obstacles nearby, and figure out if moving left or right would dodge more
-            // if the boid is to the left most of the obstacles' center points, go left
-            // if the boid is to the right of most of the obstacles' center points or on the same coordinate, go right
-            int left = 0;
-            int right = 0;
-            foreach(Obstacle o in obstacles)
-            {
-                if(transform.position.y < o.transform.position.y)
-                {
-                    left++;
-                }
-                else
-                {
-                    right++;
-                }
-            }
-
-            if(left == 0 && right == 0)
+            if(obstacles.Count == 0)
             {
                 return Vector3.zero; // if there are no obstacles, return zero so it does not change course anyways
             }
-            else if(left >= right) 
-            {
-                return Vector3.Cross(GetComponent<Boid>().vecToAtt, Vector3.up);
-            }
             else
             {
-                return -Vector3.Cross(GetComponent<Boid>().vecToAtt, Vector3.up);
+                return Vector3.Cross(GetComponent<Boid>().vecToAtt, Vector3.up);
             }
         }
     }

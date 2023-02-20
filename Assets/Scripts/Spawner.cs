@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Spawner : MonoBehaviour
 {
@@ -35,8 +36,10 @@ public class Spawner : MonoBehaviour
     public GameObject           divoidPrefab;
     public int                  numPloids = 2;
     public int                  numDivoids = 3;
-    [Header("Set in Inspector: Formation Mode")]
+    [Header("Set in Inspector and Ingame: Formation Mode")]
     public bool formationToggle = true; // true is following in a line, false is clustering based on the leader
+    [Header("Set in Inspector: Button Text")]
+    public TMP_Text buttonText;
     
     void Awake()
     {
@@ -58,7 +61,7 @@ public class Spawner : MonoBehaviour
             boids.Add(b);
             Invoke("InstantiateBoid", spawnDelay);
         }
-        // additional code for spawning in ploids and divoids after all boids are spawned
+        // additional code for spawning in ploids and divoids after all boids are spawned (part 3)
         else if (boids.Count < numBoids + numPloids)
         {
             go = Instantiate(ploidPrefab);
@@ -84,4 +87,46 @@ public class Spawner : MonoBehaviour
         // give each boid a number as it is spawned
         boids[boids.Count - 1].number = boids.Count - 1;
     }
+
+    // these functions are for the UI buttons
+    public void CreateExtraBoid() 
+    {
+        GameObject go = Instantiate(boidPrefab);
+        Boid b = go.GetComponent<Boid>();
+        b.transform.SetParent(boidAnchor);
+        boids.Add(b);
+        boids[boids.Count - 1].number = boids.Count - 1;
+    }
+
+    public void CreateExtraPloid() 
+    {
+        GameObject go = Instantiate(ploidPrefab);
+        Boid p = go.GetComponent<Boid>();
+        p.transform.SetParent(boidAnchor);
+        boids.Add(p);
+        boids[boids.Count - 1].number = boids.Count - 1;
+    }
+
+    public void CreateExtraDivoid() 
+    {
+        GameObject go = Instantiate(divoidPrefab);
+        Boid d = go.GetComponent<Boid>();
+        d.transform.SetParent(boidAnchor);
+        boids.Add(d);
+        boids[boids.Count - 1].number = boids.Count - 1;
+    }
+
+    public void ToggleFormationType()
+    {
+        formationToggle = !formationToggle;
+        if(formationToggle)
+        {
+            buttonText.text = "Formation: Lines";
+        }
+        else
+        {
+            buttonText.text = "Formation: Cluster";
+        }
+    }
+
 }
