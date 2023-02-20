@@ -20,7 +20,9 @@ public class Boid : MonoBehaviour
     public float myangle;
     // float rotationRate = 0.50f;
     public bool isLeader = false; // only one boid is designated as a leader, see spawner for where this is set
-    public int number; // the spawn order for the boid, boids spawned later use this to follow boids spawned earlier
+    public int spawnOrder; // which boid this is in the boids array, 0 is first
+    public int followOrder = -1; // the follow order for the boid, boids use this to form the line
+    public bool foundBoidToFollow = false; // toggle used to determine if boid should keep looking for a boid in the line to follow
 
     // Use this for initialization
     void Awake()
@@ -97,6 +99,73 @@ public class Boid : MonoBehaviour
         get { return transform.rotation; }
         set { transform.rotation = value; }
     }
+
+    // formation handling (part 1)
+    public void updateVelocityForFormation()
+    {
+        Vector3 vel = rigid.velocity;
+        Spawner spn = Spawner.S;
+
+        int highestNumberInNeighborhood = -1;
+        // velocity of the boid this one is following, be it leader or the one in front of us in line
+        // default to current velocity so the boid just acts normally if not able to join formation
+        Vector3 boidToFollowVel = vel; 
+        
+        foreach(Boid neighbor in neighborhood.neighbors)
+        {
+            // line formation based on spawn order
+            if(spn.formationToggle) 
+            {
+                // first time setup for line formation - get them in line based on how they discover each other
+
+                // if there is a boid with a follow number around, start by following them
+                if(neighbor.followOrder > highestNumberInNeighborhood && !foundBoidToFollow) 
+                {
+                    followOrder = neighbor.followOrder + 1; //
+                    foundBoidToFollow = true;
+                }
+                // if there is another boid following the same boid as us, make the newer one move to the end
+                else if(neighbor.followOrder == followOrder && foundBoidToFollow)
+                {
+                    if(neighbor.spawnOrder < spawnOrder)
+                    {
+                        // follow the other boid, it was spawned first
+                        followOrder++;
+                    }
+                    else
+                    {
+                        // the other boid should follow this one
+                        neighbor.followOrder++;
+                        neighbor.updateVelocityForFormation(); // get the other boid to fix its velocity/follow this one
+                    }
+                }
+                
+                // follow once set up
+
+                // if this is the boid this one is set to follow, follow them
+                if(neighbor.followOrder == followOrder - 1 && foundBoidToFollow)
+                {
+                    boidToFollowVel = neighbor.pos - pos;
+                    boidToFollowVel.Normalize();
+                    boidToFollowVel *= spn.velocity;
+
+                    Debug.Log("following ");
+                }
+            }
+            
+            // cluster formation based on the leader (first boid spawned)
+            else
+            {
+                if(neighbor.isLeader) {
+                    boidToFollowVel = neighbor.rigid.velocity; // steal the leader's velocity to create the formation if close enough
+                    // Debug.Log("in cluster formation");
+                }
+            }
+        }
+
+        vel = boidToFollowVel;
+    }
+    
 
     //FixedUpdate is called one per physics update (i.e. 50x/second)
     private void FixedUpdate()
@@ -187,10 +256,9 @@ public class Boid : MonoBehaviour
                 }
             }
 
-            // formation handling (part 1)
-            // the boids should follow the largest number less than theirs when in line formation, placeholder of -1 to be updated by neighbors
-            int boidToFollow = -1; 
-            // velocity of the boid we are following, be it leader boid or just a boid spawned before us in the line
+            // updateVelocityForFormation();
+            int highestNumberInNeighborhood = -1;
+            // velocity of the boid this one is following, be it leader or the one in front of us in line
             // default to current velocity so the boid just acts normally if not able to join formation
             Vector3 boidToFollowVel = vel; 
             
@@ -199,14 +267,43 @@ public class Boid : MonoBehaviour
                 // line formation based on spawn order
                 if(spn.formationToggle) 
                 {
-                    if(neighbor.number > boidToFollow && neighbor.number < number) 
+                    // first time setup for line formation - get them in line based on how they discover each other
+
+                    // if there is a boid with a follow number around, start by following them
+                    if(neighbor.followOrder > highestNumberInNeighborhood && !foundBoidToFollow) 
                     {
-                        boidToFollow = neighbor.number;
+                        followOrder = neighbor.followOrder + 1; //
+                        foundBoidToFollow = true;
+                    }
+                    // if there is another boid following the same boid as us, make the newer one move to the end
+                    else if(neighbor.followOrder == followOrder && foundBoidToFollow)
+                    {
+                        if(neighbor.spawnOrder < spawnOrder)
+                        {
+                            // follow the other boid, it was spawned first
+                            followOrder++;
+                        }
+                        else
+                        {
+                            // the other boid should follow this one
+                            neighbor.followOrder++;
+                            neighbor.updateVelocityForFormation(); // get the other boid to fix its velocity/follow this one
+                        }
+                    }
+                    
+                    // follow once set up
+
+                    // if this is the boid this one is set to follow, follow them
+                    if(neighbor.followOrder == followOrder - 1 && foundBoidToFollow)
+                    {
                         boidToFollowVel = neighbor.pos - pos;
                         boidToFollowVel.Normalize();
                         boidToFollowVel *= spn.velocity;
+
+                        Debug.Log("following ");
                     }
                 }
+                
                 // cluster formation based on the leader (first boid spawned)
                 else
                 {

@@ -76,12 +76,14 @@ public class Spawner : MonoBehaviour
             Invoke("InstantiateBoid", spawnDelay);
         }
 
-        // designate the first one spawned as the leader so the others can steal its velocity (part 1)
+        // designate the first one spawned as the leader so the others can steal its velocity or follow it in line (part 1)
         if(boids.Count == 1) {
             boids[0].isLeader = true;
+            boids[0].followOrder = 0;
+            boids[0].foundBoidToFollow = true;
         }
 
-        // give each boid a number as it is spawned
-        boids[boids.Count - 1].number = boids.Count - 1;
+        // give each boid a spawnOrder as it is spawned
+        boids[boids.Count - 1].spawnOrder = boids.Count - 1;
     }
 }
