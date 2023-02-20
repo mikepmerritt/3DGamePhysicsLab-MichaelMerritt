@@ -333,18 +333,19 @@ MonoBehaviour:
   spawnRadius: 100
   spawnDelay: 0.1
   velocity: 20
-  neighborDist: 5
+  neighborDist: 10
   collDist: 10
   velMatching: 10
   flockCentering: 0.2
   collAvoid: 4
-  attractPull: 3
-  attractPush: 2
+  attractPull: 7
+  attractPush: 3
   attractPushDist: 1
   ploidPrefab: {fileID: 464121312093887331, guid: 9c1409bf395dcf24196c78f752657de5, type: 3}
   divoidPrefab: {fileID: 6664381239738647483, guid: c32529a40dc967e4e97717391bed5933, type: 3}
   numPloids: 5
   numDivoids: 5
+  formationToggle: 1
 --- !u!1 &1459192488
 GameObject:
   m_ObjectHideFlags: 0
@@ -377,7 +378,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2e225b9383780c4b91961eb43542577, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 4
+  radius: 6
   xPhase: 0.5
   yPhase: 0.5
   zPhase: 0.1

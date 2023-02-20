@@ -20,6 +20,7 @@ public class Boid : MonoBehaviour
     public float myangle;
     // float rotationRate = 0.50f;
     public bool isLeader = false; // only one boid is designated as a leader, see spawner for where this is set
+    public int number; // the spawn order for the boid, boids spawned later use this to follow boids spawned earlier
 
     // Use this for initialization
     void Awake()
@@ -186,14 +187,37 @@ public class Boid : MonoBehaviour
                 }
             }
 
-            // group up and steal velocities from the leader if it is nearby
+            // formation handling (part 1)
+            // the boids should follow the largest number less than theirs when in line formation, placeholder of -1 to be updated by neighbors
+            int boidToFollow = -1; 
+            // velocity of the boid we are following, be it leader boid or just a boid spawned before us in the line
+            // default to current velocity so the boid just acts normally if not able to join formation
+            Vector3 boidToFollowVel = vel; 
+            
             foreach(Boid neighbor in neighborhood.neighbors)
             {
-                if(neighbor.isLeader) {
-                    vel = neighbor.rigid.velocity; // steal the leader's velocity to create the formation if close enough
-                    Debug.Log("in formation");
+                // line formation based on spawn order
+                if(spn.formationToggle) 
+                {
+                    if(neighbor.number > boidToFollow && neighbor.number < number) 
+                    {
+                        boidToFollow = neighbor.number;
+                        boidToFollowVel = neighbor.pos - pos;
+                        boidToFollowVel.Normalize();
+                        boidToFollowVel *= spn.velocity;
+                    }
+                }
+                // cluster formation based on the leader (first boid spawned)
+                else
+                {
+                    if(neighbor.isLeader) {
+                        boidToFollowVel = neighbor.rigid.velocity; // steal the leader's velocity to create the formation if close enough
+                        // Debug.Log("in cluster formation");
+                    }
                 }
             }
+
+            vel = boidToFollowVel;
         }
 
         

@@ -35,6 +35,8 @@ public class Spawner : MonoBehaviour
     public GameObject           divoidPrefab;
     public int                  numPloids = 2;
     public int                  numDivoids = 3;
+    [Header("Set in Inspector: Formation Mode")]
+    public bool formationToggle = true; // true is following in a line, false is clustering based on the leader
     
     void Awake()
     {
@@ -78,5 +80,8 @@ public class Spawner : MonoBehaviour
         if(boids.Count == 1) {
             boids[0].isLeader = true;
         }
+
+        // give each boid a number as it is spawned
+        boids[boids.Count - 1].number = boids.Count - 1;
     }
 }
