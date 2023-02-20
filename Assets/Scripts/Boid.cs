@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,7 +18,7 @@ public class Boid : MonoBehaviour
     public float dangle;
     public Vector3 rotVec2;
     public float myangle;
-    float rotationRate = 0.50f;
+    // float rotationRate = 0.50f;
 
     
 
@@ -109,14 +109,17 @@ public class Boid : MonoBehaviour
         Vector3 tooClosePos = neighborhood.avgClosePos;
 
         // If the response is Vecator3.zero, then no need to react
-        if (tooClosePos != Vector3.zero)
-        {
-            velAvoid = pos - tooClosePos;
-            velAvoid.Normalize();
-            velAvoid *= spn.velocity;
+        // if (tooClosePos != Vector3.zero)
+        // {
+        //     velAvoid = pos - tooClosePos;
+        //     // velAvoid = Vector3.Cross(pos, Vector3.up); // doesnt work they stack
+        //     Debug.Log(velAvoid.y);
 
-            Debug.Log("too close!");
-        }
+        //     velAvoid.Normalize();
+        //     velAvoid *= spn.velocity;
+        // }
+
+        // after testing, the boids move much better with this disabled, so I put colliders on them to prevent stacking instead
 
         //Velocity matching - Try to match velocity with neigbors
         Vector3 velAlign = neighborhood.avgVel;
@@ -144,11 +147,23 @@ public class Boid : MonoBehaviour
         bool attracted = (delta.magnitude > spn.attractPushDist);
         Vector3 velAttract = delta.normalized * spn.velocity;
 
+        // Obstacle avoidance - get the obstacleAvoidVel from neighborhood (part 2)
+        Vector3 obstacleAvoidVel = neighborhood.obstacleAvoidVel;
+
         //Apply all the velocities
         float fdt = Time.fixedDeltaTime;
-        if (velAvoid != Vector3.zero)
+        // if (velAvoid != Vector3.zero)
+        // {
+        //     vel = Vector3.Lerp(vel, velAvoid, spn.collAvoid);
+        // }
+
+        // after testing, the boids move much better with this disabled, so I put colliders on them to prevent stacking instead
+
+        // avoid obstacles (part 2)
+        if(obstacleAvoidVel != Vector3.zero)
         {
-            vel = Vector3.Lerp(vel, velAvoid, spn.collAvoid);
+            vel = Vector3.Lerp(vel, obstacleAvoidVel, spn.collAvoid);
+            Debug.Log("avoiding");
         }
         else
         {
@@ -187,6 +202,10 @@ public class Boid : MonoBehaviour
         vecToAtt = attPos - pos;
         //normalize vectoatt and multiply by collider radius to change vector length
         vecToAtt = vecToAtt.normalized * myCollider.radius;
+
+        /* 
+        // vector stuff is distracting, disabling it
+
         //Now the line from pos to pos + vecToAtt that is drawn with GL.Lines below
         // is the vector from the boid pointing towards the attractor with the radius of
         // the SphereCollider of the boid
@@ -220,11 +239,15 @@ public class Boid : MonoBehaviour
         myq = Quaternion.AngleAxis(myangle, vecToAtt); //update the quaternion rotation
         //Debug.Log("myq " + myq.w + " " + myq.x + " " + myq.y + " " + myq.z);
         rotVec2 = myq * rotVec2; //rotate the vector on the 15 deg cone
+        */
 
         LookAhead();
 
     }
 
+    /*
+
+    // vector stuff is distracting, disabling it
 
     public void OnRenderObject()
     {
@@ -266,7 +289,7 @@ public class Boid : MonoBehaviour
 
     }
 
-static void CreateLineMaterial()
+    static void CreateLineMaterial()
     {
         if (!lineMaterial)
         {
@@ -284,4 +307,5 @@ static void CreateLineMaterial()
             lineMaterial.SetInt("_ZWrite", 0);
         }
     }
+    */
 }
