@@ -329,7 +329,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   boidPrefab: {fileID: 778618241813960082, guid: 41eb12cc807e8c94aa2e8d167563fc81, type: 3}
   boidAnchor: {fileID: 2063842646}
-  numBoids: 4
+  numBoids: 5
   spawnRadius: 100
   spawnDelay: 0.1
   velocity: 20
@@ -343,11 +343,8 @@ MonoBehaviour:
   attractPushDist: 1
   ploidPrefab: {fileID: 464121312093887331, guid: 9c1409bf395dcf24196c78f752657de5, type: 3}
   divoidPrefab: {fileID: 6664381239738647483, guid: c32529a40dc967e4e97717391bed5933, type: 3}
-  numPloids: 0
-  numDivoids: 0
-  boidTargetHeight: 2
-  ploidTargetHeight: 5
-  divoidTargetHeight: -2
+  numPloids: 5
+  numDivoids: 5
 --- !u!1 &1459192488
 GameObject:
   m_ObjectHideFlags: 0

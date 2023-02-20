@@ -36,11 +36,6 @@ public class Spawner : MonoBehaviour
     public int                  numPloids = 2;
     public int                  numDivoids = 3;
     
-    // Some variables to use for the formation of the boids (part 1)
-    public float                boidTargetHeight = 2f;
-    public float                ploidTargetHeight = 5f;
-    public float                divoidTargetHeight = -2f;
-    
     void Awake()
     {
         //Set the Singleton S to be this instance of BoidSpawner
@@ -52,19 +47,19 @@ public class Spawner : MonoBehaviour
 
     public void InstantiateBoid()
     {
+        GameObject go;
         if (boids.Count < numBoids)
         {
-            GameObject go = Instantiate(boidPrefab);
+            go = Instantiate(boidPrefab);
             Boid b = go.GetComponent<Boid>();
             b.transform.SetParent(boidAnchor);
             boids.Add(b);
             Invoke("InstantiateBoid", spawnDelay);
         }
         // additional code for spawning in ploids and divoids after all boids are spawned
-        // TODO: separate boids, ploids, and divoids when they get unique behaviors
         else if (boids.Count < numBoids + numPloids)
         {
-            GameObject go = Instantiate(ploidPrefab);
+            go = Instantiate(ploidPrefab);
             Boid p = go.GetComponent<Boid>();
             p.transform.SetParent(boidAnchor);
             boids.Add(p);
@@ -72,11 +67,16 @@ public class Spawner : MonoBehaviour
         }
         else if (boids.Count < numBoids + numPloids + numDivoids)
         {
-            GameObject go = Instantiate(divoidPrefab);
+            go = Instantiate(divoidPrefab);
             Boid d = go.GetComponent<Boid>();
             d.transform.SetParent(boidAnchor);
             boids.Add(d);
             Invoke("InstantiateBoid", spawnDelay);
+        }
+
+        // designate the first one spawned as the leader so the others can steal its velocity (part 1)
+        if(boids.Count == 1) {
+            boids[0].isLeader = true;
         }
     }
 }

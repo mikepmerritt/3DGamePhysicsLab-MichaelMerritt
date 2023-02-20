@@ -19,8 +19,7 @@ public class Boid : MonoBehaviour
     public Vector3 rotVec2;
     public float myangle;
     // float rotationRate = 0.50f;
-
-    
+    public bool isLeader = false; // only one boid is designated as a leader, see spawner for where this is set
 
     // Use this for initialization
     void Awake()
@@ -75,7 +74,7 @@ public class Boid : MonoBehaviour
     void LookAhead()
     {
         //Orients the Boid to look at the direction it's flying
-        
+
         transform.LookAt(pos + rigid.velocity);
         Vector3 tvec;
         tvec = brot * Vector3.up;
@@ -163,7 +162,7 @@ public class Boid : MonoBehaviour
         if(obstacleAvoidVel != Vector3.zero)
         {
             vel = Vector3.Lerp(vel, obstacleAvoidVel, spn.collAvoid);
-            Debug.Log("avoiding");
+            // Debug.Log("avoiding");
         }
         else
         {
@@ -186,7 +185,19 @@ public class Boid : MonoBehaviour
                     vel = Vector3.Lerp(vel, -velAttract, spn.attractPush * fdt);
                 }
             }
+
+            // group up and steal velocities from the leader if it is nearby
+            foreach(Boid neighbor in neighborhood.neighbors)
+            {
+                if(neighbor.isLeader) {
+                    vel = neighbor.rigid.velocity; // steal the leader's velocity to create the formation if close enough
+                    Debug.Log("in formation");
+                }
+            }
         }
+
+        
+        
 
         //set vel to the velocity set on the spawner singleton
         vel = vel.normalized * spn.velocity;
